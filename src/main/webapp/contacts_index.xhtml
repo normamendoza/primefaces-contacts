@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+<head>
+    <title>Contactos PrimeFaces</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+     integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+    
+<body>
+ <div class="row" style="margin: 15px;">
+   <div class="col-md-5">
+    <h:panelGroup>
+        <h3>Contacto</h3>
+        <h:form>
+            <h:inputHidden value="#{contactsManager.item.id}" />
+            <h:panelGroup layout="block" styleClass="row" rendered="#{contactsManager.item.id != null}">
+               <div class="form-group col-md-6">
+                 <label class="field-label">ID</label>	
+             	 <h:inputText value="#{contactsManager.item.id}" styleClass="form-control" readonly="true"/>
+              </div>
+              <div class="form-group col-md-6">
+                 <label class="field-label">Fecha Creacion</label>	
+             	 <h:inputText value="#{contactsManager.item.fechaStr}" styleClass="form-control" readonly="true"/>
+              </div>
+			</h:panelGroup>
+            <div class="form-group">
+                 <label class="field-label">Nombre</label>	
+             	 <h:inputText value="#{contactsManager.item.nombre}" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                 <label class="field-label">Apellido</label>	
+             	 <h:inputText value="#{contactsManager.item.apellido}" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                 <label class="field-label">Alias</label>	
+             	 <h:inputText value="#{contactsManager.item.alias}" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                 <label class="field-label">Direccion</label>	
+             	 <h:inputText value="#{contactsManager.item.direccion}" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                 <label class="field-label">Email</label>	
+             	 <h:inputText value="#{contactsManager.item.email}" styleClass="form-control"/>
+            </div>
+            <div class="form-group">
+                 <label class="field-label">Telefono</label>	
+             	 <h:inputText value="#{contactsManager.item.telefono}" styleClass="form-control"/>
+            </div>
+            <p>
+            	<h:commandButton value="Nuevo" rendered="#{contactsManager.item.id != null}" action="#{contactsManager.resetAdd}" styleClass="btn btn-primary"/>
+                <h:commandButton value="Guardar" rendered="#{contactsManager.item.id == null}" action="#{contactsManager.add}" styleClass="btn btn-primary"/>
+                <h:commandButton value="Guardar" rendered="#{contactsManager.item.id != null}" action="#{contactsManager.saveEdit}" styleClass="btn btn-primary"/>
+                <h:commandButton value="Eliminar" rendered="#{contactsManager.item.id != null}" action="#{contactsManager.delete(contactsManager.item)}" styleClass="btn btn-primary"/>
+            </p>
+        </h:form>
+    </h:panelGroup>
+    </div>
+    <div class="col-md-7">
+    <h3>Lista de Contactos</h3>
+    <h:form>
+			<h:dataTable var="item" lazy="true" value="#{contactsManager.dataTableModel}" paginator="true" rows="10" styleClass="table table-bordered"
+                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                 rowsPerPageTemplate="5,10,15" selectionMode="single" >
+            <h:column><f:facet name="header">ID</f:facet>#{item.id}</h:column>
+            <h:column><f:facet name="header">Nombre</f:facet>#{item.nombre}</h:column>
+            <h:column><f:facet name="header">Apellido</f:facet>#{item.apellido}</h:column>
+            <h:column><f:facet name="header">Alias</f:facet>#{item.alias}</h:column>
+            <h:column><f:facet name="header">Direccion</f:facet>#{item.direccion}</h:column>
+            <h:column><f:facet name="header">Telefono</f:facet>#{item.telefono}</h:column>
+            <h:column><f:facet name="header">Email</f:facet>#{item.email}</h:column>
+            <h:column><f:facet name="header">Fecha Creacion</f:facet>#{item.fechaStr}</h:column>
+            <h:column>
+                <h:commandButton value="edit" styleClass="btn btn-success" action="#{contactsManager.edit(item)}" />
+                <h:commandButton value="delete" styleClass="btn btn-danger" action="#{contactsManager.delete(item)}" />
+            </h:column>
+        </h:dataTable>
+    </h:form>
+    
+    </div>
+    
+</div>
+</body>
+</html>
