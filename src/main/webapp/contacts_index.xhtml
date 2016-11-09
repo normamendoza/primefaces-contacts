@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:h="http://java.sun.com/jsf/html">
-<head>
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
     <title>Contactos PrimeFaces</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-</head>
+</h:head>
     
-<body>
+<h:body>
  <div class="row" style="margin: 15px;">
    <div class="col-md-5">
     <h:panelGroup>
@@ -60,28 +61,30 @@
     </h:panelGroup>
     </div>
     <div class="col-md-7">
+    <h:panelGroup>
     <h3>Lista de Contactos</h3>
     <h:form>
-			<h:dataTable var="item" lazy="true" value="#{contactsManager.dataTableModel}" paginator="true" rows="10" styleClass="table table-bordered"
+			<p:dataTable var="item" lazy="true" value="#{contactsManager.dataTableModel}" paginator="true" rows="10" styleClass="table table-bordered"
                  paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
                  rowsPerPageTemplate="5,10,15" selectionMode="single" >
-            <h:column><f:facet name="header">ID</f:facet>#{item.id}</h:column>
-            <h:column><f:facet name="header">Nombre</f:facet>#{item.nombre}</h:column>
-            <h:column><f:facet name="header">Apellido</f:facet>#{item.apellido}</h:column>
-            <h:column><f:facet name="header">Alias</f:facet>#{item.alias}</h:column>
-            <h:column><f:facet name="header">Direccion</f:facet>#{item.direccion}</h:column>
-            <h:column><f:facet name="header">Telefono</f:facet>#{item.telefono}</h:column>
-            <h:column><f:facet name="header">Email</f:facet>#{item.email}</h:column>
-            <h:column><f:facet name="header">Fecha Creacion</f:facet>#{item.fechaStr}</h:column>
-            <h:column>
+            <p:column><f:facet name="header">ID</f:facet>#{item.id}</p:column>
+            <p:column><f:facet name="header">Nombre</f:facet>#{item.nombre}</p:column>
+            <p:column><f:facet name="header">Apellido</f:facet>#{item.apellido}</p:column>
+            <p:column><f:facet name="header">Alias</f:facet>#{item.alias}</p:column>
+            <p:column><f:facet name="header">Direccion</f:facet>#{item.direccion}</p:column>
+            <p:column><f:facet name="header">Telefono</f:facet>#{item.telefono}</p:column>
+            <p:column><f:facet name="header">Email</f:facet>#{item.email}</p:column>
+            <p:column><f:facet name="header">Fecha Creacion</f:facet>#{item.fechaStr}</p:column>
+            <p:column>
+                <f:facet name="header">Acciones</f:facet>
                 <h:commandButton value="edit" styleClass="btn btn-success" action="#{contactsManager.edit(item)}" />
                 <h:commandButton value="delete" styleClass="btn btn-danger" action="#{contactsManager.delete(item)}" />
-            </h:column>
-        </h:dataTable>
+            </p:column>
+        </p:dataTable>
     </h:form>
-    
+    </h:panelGroup>
     </div>
     
 </div>
-</body>
+</h:body>
 </html>

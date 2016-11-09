@@ -3,14 +3,14 @@ package py.una.pol.structs;
 import java.util.List;
 
 public class ListResponse<T> {
-	private Long total;
+	private int total;
 	private List<T> lista;
 
-	public Long getTotal() {
+	public int getTotal() {
 		return total;
 	}
 
-	public void setTotal(Long total) {
+	public void setTotal(int total) {
 		this.total = total;
 	}
 

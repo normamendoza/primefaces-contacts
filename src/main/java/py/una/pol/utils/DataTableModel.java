@@ -8,6 +8,7 @@ import org.primefaces.model.SortOrder;
 
 import py.una.pol.model.Contact;
 import py.una.pol.service.ContactoService;
+import py.una.pol.structs.ListResponse;
 
 public class DataTableModel extends LazyDataModel<Contact> {
 
@@ -19,8 +20,20 @@ public class DataTableModel extends LazyDataModel<Contact> {
 	@Override
 	public List<Contact> load(int first, int pageSize, String sortField, SortOrder sortOrder,
 			Map<String, Object> filters) {
-		List<Contact> data = ContactoService.getContactList(first, pageSize, null);
-		System.out.println("Registros Encontrados: " + data.size());
-		return data;
+		ListResponse<Contact> data = ContactoService.getContactList(first, pageSize, null);
+		setRowCount(data.getTotal());
+		System.out.println("Registros Encontrados: " + data.getLista().size());
+		return data.getLista();
+	}
+
+	@Override
+	public Contact getRowData(String rowKey) {
+
+		return null;
+	}
+
+	@Override
+	public Object getRowKey(Contact contact) {
+		return contact.getId();
 	}
 }

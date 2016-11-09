@@ -3,9 +3,7 @@ package py.una.pol.service;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -30,7 +28,7 @@ public class ContactoService {
 
 	private static final String BASE_URL = "https://desa03.konecta.com.py/pwf/rest/agenda";
 
-	public static List<Contact> getContactList(int first, int pageSize, String filter) {
+	public static ListResponse<Contact> getContactList(int first, int pageSize, String filter) {
 		try {
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			URIBuilder uriBuilder = new URIBuilder(BASE_URL);
@@ -38,11 +36,10 @@ public class ContactoService {
 			uriBuilder.addParameter("cantidad", String.valueOf(pageSize));
 			HttpGet httpGet = new HttpGet(uriBuilder.build());
 			CloseableHttpResponse response = httpclient.execute(httpGet);
-			ListResponse<Contact> list = convertListResponse(response.getEntity().getContent());
-			return list != null ? list.getLista() : new ArrayList<>();
+			return convertListResponse(response.getEntity().getContent());
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return new ArrayList<>();
+			return new ListResponse<Contact>();
 		}
 	}
 
