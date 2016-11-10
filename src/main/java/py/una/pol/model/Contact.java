@@ -12,7 +12,7 @@ public class Contact {
 	private String email;
 	private String direccion;
 	private String alias;
-	private Date fechacreacion = new Date();
+	private Date fechacreacion;
 
 	public Long getId() {
 		return id;

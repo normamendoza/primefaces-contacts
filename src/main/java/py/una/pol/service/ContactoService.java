@@ -1,10 +1,14 @@
 package py.una.pol.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.lang.reflect.Type;
 import java.util.Date;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -51,61 +55,58 @@ public class ContactoService {
 		return gson.fromJson(jsonReader, type);
 	}
 
-	private static Contact convertResponse(InputStream is) {
+	private static Contact convertResponse(String response) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCAdapter()).create();
-		JsonReader jsonReader = new JsonReader(new InputStreamReader(is));
+		JsonReader jsonReader = new JsonReader(new StringReader(response));
 		return gson.fromJson(jsonReader, Contact.class);
 	}
 
-	public static void actualizar(Contact contact) {
+	public static void actualizar(Contact contact) throws UnsupportedOperationException, IOException {
 		Gson gson = new Gson();
 		String json = gson.toJson(contact);
+		System.out.println("actualizando...");
 		System.out.println(json);
-		try {
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpPut httpPut = new HttpPut(BASE_URL);
-			StringEntity entity = new StringEntity(json);
-			httpPut.setEntity(entity);
-			httpPut.setHeader("Content-Type", "application/json");
-			CloseableHttpResponse response = httpclient.execute(httpPut);
-			contact = convertResponse(response.getEntity().getContent());
-			System.out.println("contacto actualizado: " + contact);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPut httpPut = new HttpPut(BASE_URL + "/" + contact.getId());
+		StringEntity entity = new StringEntity(json);
+		httpPut.setEntity(entity);
+		httpPut.setHeader("Content-Type", "application/json");
+		CloseableHttpResponse response = httpclient.execute(httpPut);
+		String respuesta = IOUtils.toString(response.getEntity().getContent());
+		System.out.println("respuesta -> " + respuesta);
+		contact = convertResponse(respuesta);
+		System.out.println("contacto actualizado: " + contact);
+
 	}
 
-	public static void crear(Contact contact) {
+	public static Contact crear(Contact contact) throws ClientProtocolException, IOException {
 		Gson gson = new Gson();
 		String json = gson.toJson(contact);
 		System.out.println(json);
-		try {
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpPost httpPost = new HttpPost(BASE_URL);
-			StringEntity entity = new StringEntity(json);
-			httpPost.setEntity(entity);
-			httpPost.setHeader("Content-Type", "application/json");
-			CloseableHttpResponse response = httpclient.execute(httpPost);
-			contact = convertResponse(response.getEntity().getContent());
-			System.out.println("contacto creado: " + contact);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpPost httpPost = new HttpPost(BASE_URL);
+		StringEntity entity = new StringEntity(json);
+		httpPost.setEntity(entity);
+		httpPost.setHeader("Content-Type", "application/json");
+		CloseableHttpResponse response = httpclient.execute(httpPost);
+		String respuesta = IOUtils.toString(response.getEntity().getContent());
+		System.out.println("respuesta -> " + respuesta);
+		Contact creado = convertResponse(respuesta);
+		System.out.println("contacto creado: " + creado);
+		return creado;
 	}
 
-	public static void eliminar(Contact contact) {
+	public static void eliminar(Contact contact) throws ClientProtocolException, IOException {
 		Gson gson = new Gson();
 		String json = gson.toJson(contact);
 		System.out.println(json);
-		try {
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			HttpDelete httpDelete = new HttpDelete(BASE_URL + "/" + contact.getId());
-			CloseableHttpResponse response = httpclient.execute(httpDelete);
-			contact = convertResponse(response.getEntity().getContent());
-			System.out.println("contacto eliminado: " + contact);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+		HttpDelete httpDelete = new HttpDelete(BASE_URL + "/" + contact.getId());
+		CloseableHttpResponse response = httpclient.execute(httpDelete);
+		String respuesta = IOUtils.toString(response.getEntity().getContent());
+		contact = convertResponse(respuesta);
+		System.out.println("contacto eliminado: " + contact);
+
 	}
 
 }

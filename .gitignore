@@ -1,0 +1,9 @@
+/target/
+.settings/
+.attach*
+target
+!.settings/.jsdtscope
+.project
+.classpath
+/bin/
+.tern-project

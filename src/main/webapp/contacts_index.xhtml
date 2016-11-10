@@ -15,7 +15,19 @@
    <div class="col-md-5">
     <h:panelGroup>
         <h3>Contacto</h3>
-        <h:form>
+        <h:form id="contactoForm">
+        	<h:panelGroup layout="block" rendered="#{contactsManager.errorMsg != null}">
+        	<div class="alert alert-danger alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert">x</button>
+				<div>#{contactsManager.errorMsg}</div>
+			</div>
+        	</h:panelGroup>
+        	<h:panelGroup layout="block" rendered="#{contactsManager.successMsg != null}">
+        	<div class="alert alert-success alert-dismissable">
+				<button type="button" class="close" data-dismiss="alert">x</button>
+				<div>#{contactsManager.successMsg}</div>
+			</div>
+        	</h:panelGroup>
             <h:inputHidden value="#{contactsManager.item.id}" />
             <h:panelGroup layout="block" styleClass="row" rendered="#{contactsManager.item.id != null}">
                <div class="form-group col-md-6">
