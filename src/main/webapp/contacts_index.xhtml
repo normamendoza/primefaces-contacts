@@ -12,7 +12,7 @@
     
 <h:body>
  <div class="row" style="margin: 15px;">
-   <div class="col-md-5">
+   <div class="col-md-4">
     <h:panelGroup>
         <h3>Contacto</h3>
         <h:form id="contactoForm">
@@ -72,7 +72,7 @@
         </h:form>
     </h:panelGroup>
     </div>
-    <div class="col-md-7">
+    <div class="col-md-8">
     <h:panelGroup>
     <h3>Lista de Contactos</h3>
     <h:form>
@@ -89,8 +89,12 @@
             <p:column><f:facet name="header">Fecha Creacion</f:facet>#{item.fechaStr}</p:column>
             <p:column>
                 <f:facet name="header">Acciones</f:facet>
-                <h:commandButton value="edit" styleClass="btn btn-success" action="#{contactsManager.edit(item)}" />
-                <h:commandButton value="delete" styleClass="btn btn-danger" action="#{contactsManager.delete(item)}" />
+                <h:commandLink styleClass="btn btn-success" action="#{contactsManager.edit(item)}">
+                	<i class="glyphicon glyphicon-pencil" style="color: white;"></i>
+                </h:commandLink>
+                <h:commandLink styleClass="btn btn-danger" action="#{contactsManager.delete(item)}">
+                     <i class="glyphicon glyphicon-trash" style="color: white;"></i>
+                </h:commandLink>
             </p:column>
         </p:dataTable>
     </h:form>
