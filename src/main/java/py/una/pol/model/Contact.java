@@ -3,7 +3,7 @@ package py.una.pol.model;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Contact {
+public class Contact extends BaseEntity {
 
 	private Long id;
 	private String nombre;
@@ -14,10 +14,12 @@ public class Contact {
 	private String alias;
 	private Date fechacreacion;
 
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}

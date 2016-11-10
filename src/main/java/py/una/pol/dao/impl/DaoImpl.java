@@ -1,9 +1,10 @@
-package py.una.pol.service;
+package py.una.pol.dao.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 
@@ -21,92 +22,115 @@ import org.apache.http.impl.client.HttpClients;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 
-import py.una.pol.model.Contact;
+import py.una.pol.dao.Dao;
+import py.una.pol.model.BaseEntity;
 import py.una.pol.structs.ListResponse;
 import py.una.pol.utils.GsonUTCAdapter;
 
-public class ContactoService {
+public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 
+	private Class<T> entityClass;
 	private static final String BASE_URL = "https://desa03.konecta.com.py/pwf/rest/agenda";
+	private CloseableHttpClient httpClient;
 
-	public static ListResponse<Contact> getContactList(int first, int pageSize, String filter) {
+	@Override
+	public ListResponse<T> getList(int first, int pageSize, String filter) {
 		try {
-			CloseableHttpClient httpclient = HttpClients.createDefault();
 			URIBuilder uriBuilder = new URIBuilder(BASE_URL);
 			uriBuilder.addParameter("inicio", String.valueOf(first));
 			uriBuilder.addParameter("cantidad", String.valueOf(pageSize));
 			HttpGet httpGet = new HttpGet(uriBuilder.build());
-			CloseableHttpResponse response = httpclient.execute(httpGet);
+			CloseableHttpResponse response = getHttpClient().execute(httpGet);
 			return convertListResponse(response.getEntity().getContent());
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return new ListResponse<Contact>();
+			return new ListResponse<T>();
 		}
 	}
 
-	private static ListResponse<Contact> convertListResponse(InputStream is) {
+	private ListResponse<T> convertListResponse(InputStream is) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCAdapter()).create();
 		JsonReader jsonReader = new JsonReader(new InputStreamReader(is));
-		Type type = new TypeToken<ListResponse<Contact>>() {
-		}.getType();
-		return gson.fromJson(jsonReader, type);
+		/*
+		 * Type type = new TypeToken<ListResponse<T>>() { }.getType();
+		 */
+		return gson.fromJson(jsonReader, getListDataType());
+
 	}
 
-	private static Contact convertResponse(String response) {
+	private T convertResponse(String response) {
 		Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new GsonUTCAdapter()).create();
 		JsonReader jsonReader = new JsonReader(new StringReader(response));
-		return gson.fromJson(jsonReader, Contact.class);
+		return gson.fromJson(jsonReader, getEntityClass());
 	}
 
-	public static void actualizar(Contact contact) throws UnsupportedOperationException, IOException {
+	@SuppressWarnings("unchecked")
+	private Class<T> getEntityClass() {
+
+		if (entityClass == null) {
+			ParameterizedType superClass = (ParameterizedType) this.getClass().getGenericSuperclass();
+			entityClass = (Class<T>) superClass.getActualTypeArguments()[0];
+		}
+		return entityClass;
+	}
+
+	@Override
+	public void actualizar(T object) throws UnsupportedOperationException, IOException {
 		Gson gson = new Gson();
-		String json = gson.toJson(contact);
+		String json = gson.toJson(object);
 		System.out.println("actualizando...");
 		System.out.println(json);
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpPut httpPut = new HttpPut(BASE_URL + "/" + contact.getId());
+		HttpPut httpPut = new HttpPut(BASE_URL + "/" + object.getId());
 		StringEntity entity = new StringEntity(json);
 		httpPut.setEntity(entity);
 		httpPut.setHeader("Content-Type", "application/json");
-		CloseableHttpResponse response = httpclient.execute(httpPut);
+		CloseableHttpResponse response = getHttpClient().execute(httpPut);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
 		System.out.println("respuesta -> " + respuesta);
-		contact = convertResponse(respuesta);
-		System.out.println("contacto actualizado: " + contact);
-
+		object = convertResponse(respuesta);
+		System.out.println("objeto actualizado: " + object);
 	}
 
-	public static Contact crear(Contact contact) throws ClientProtocolException, IOException {
+	@Override
+	public T crear(T object) throws ClientProtocolException, IOException {
 		Gson gson = new Gson();
-		String json = gson.toJson(contact);
+		String json = gson.toJson(object);
 		System.out.println(json);
-		CloseableHttpClient httpclient = HttpClients.createDefault();
 		HttpPost httpPost = new HttpPost(BASE_URL);
 		StringEntity entity = new StringEntity(json);
 		httpPost.setEntity(entity);
 		httpPost.setHeader("Content-Type", "application/json");
-		CloseableHttpResponse response = httpclient.execute(httpPost);
+		CloseableHttpResponse response = getHttpClient().execute(httpPost);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
 		System.out.println("respuesta -> " + respuesta);
-		Contact creado = convertResponse(respuesta);
-		System.out.println("contacto creado: " + creado);
+		T creado = convertResponse(respuesta);
+		System.out.println("objeto creado: " + creado);
 		return creado;
 	}
 
-	public static void eliminar(Contact contact) throws ClientProtocolException, IOException {
+	@Override
+	public void eliminar(T object) throws ClientProtocolException, IOException {
+
 		Gson gson = new Gson();
-		String json = gson.toJson(contact);
+		String json = gson.toJson(object);
 		System.out.println(json);
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-		HttpDelete httpDelete = new HttpDelete(BASE_URL + "/" + contact.getId());
-		CloseableHttpResponse response = httpclient.execute(httpDelete);
+		HttpDelete httpDelete = new HttpDelete(BASE_URL + "/" + object.getId());
+		CloseableHttpResponse response = getHttpClient().execute(httpDelete);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
-		contact = convertResponse(respuesta);
-		System.out.println("contacto eliminado: " + contact);
+		object = convertResponse(respuesta);
+		System.out.println("objeto eliminado: " + object);
 
 	}
+
+	private CloseableHttpClient getHttpClient() {
+		if (httpClient == null) {
+			httpClient = HttpClients.createDefault();
+		}
+		return httpClient;
+	}
+
+	public abstract Type getListDataType();
 
 }

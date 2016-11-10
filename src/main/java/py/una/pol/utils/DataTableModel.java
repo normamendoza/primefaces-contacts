@@ -6,11 +6,11 @@ import java.util.Map;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 
-import py.una.pol.model.Contact;
-import py.una.pol.service.ContactoService;
+import py.una.pol.dao.Dao;
+import py.una.pol.model.BaseEntity;
 import py.una.pol.structs.ListResponse;
 
-public class DataTableModel extends LazyDataModel<Contact> {
+public abstract class DataTableModel<T extends BaseEntity> extends LazyDataModel<T> {
 
 	/**
 	 * 
@@ -18,22 +18,18 @@ public class DataTableModel extends LazyDataModel<Contact> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public List<Contact> load(int first, int pageSize, String sortField, SortOrder sortOrder,
-			Map<String, Object> filters) {
-		ListResponse<Contact> data = ContactoService.getContactList(first, pageSize, null);
+	public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+		ListResponse<T> data = getService().getList(first, pageSize, null);
 		setRowCount(data.getTotal());
 		System.out.println("Registros Encontrados: " + data.getLista().size());
 		return data.getLista();
 	}
 
-	@Override
-	public Contact getRowData(String rowKey) {
-
-		return null;
-	}
+	public abstract Dao<T> getService();
 
 	@Override
-	public Object getRowKey(Contact contact) {
-		return contact.getId();
+	public Object getRowKey(T object) {
+		return object.getId();
 	}
+
 }
