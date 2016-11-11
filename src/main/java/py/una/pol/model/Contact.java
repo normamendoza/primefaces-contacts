@@ -8,7 +8,7 @@ public class Contact extends BaseEntity {
 	private Long id;
 	private String nombre;
 	private String apellido;
-	private String telefono;
+	private Integer telefono;
 	private String email;
 	private String direccion;
 	private String alias;
@@ -64,11 +64,11 @@ public class Contact extends BaseEntity {
 		this.alias = alias;
 	}
 
-	public String getTelefono() {
+	public Integer getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(String telefono) {
+	public void setTelefono(Integer telefono) {
 		this.telefono = telefono;
 	}
 

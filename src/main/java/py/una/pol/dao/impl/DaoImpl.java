@@ -33,7 +33,6 @@ public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 
 	private Class<T> entityClass;
 	private static final String BASE_URL = "https://desa03.konecta.com.py/pwf/rest/agenda";
-	private CloseableHttpClient httpClient;
 
 	@Override
 	public ListResponse<T> getList(int first, int pageSize, String filter) {
@@ -41,8 +40,10 @@ public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 			URIBuilder uriBuilder = new URIBuilder(BASE_URL);
 			uriBuilder.addParameter("inicio", String.valueOf(first));
 			uriBuilder.addParameter("cantidad", String.valueOf(pageSize));
+			uriBuilder.addParameter("filtro", filter);
 			HttpGet httpGet = new HttpGet(uriBuilder.build());
-			CloseableHttpResponse response = getHttpClient().execute(httpGet);
+			CloseableHttpClient cliente = HttpClients.createDefault();
+			CloseableHttpResponse response = cliente.execute(httpGet);
 			return convertListResponse(response.getEntity().getContent());
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -86,7 +87,8 @@ public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 		StringEntity entity = new StringEntity(json);
 		httpPut.setEntity(entity);
 		httpPut.setHeader("Content-Type", "application/json");
-		CloseableHttpResponse response = getHttpClient().execute(httpPut);
+		CloseableHttpClient cliente = HttpClients.createDefault();
+		CloseableHttpResponse response = cliente.execute(httpPut);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
 		System.out.println("respuesta -> " + respuesta);
 		object = convertResponse(respuesta);
@@ -102,7 +104,8 @@ public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 		StringEntity entity = new StringEntity(json);
 		httpPost.setEntity(entity);
 		httpPost.setHeader("Content-Type", "application/json");
-		CloseableHttpResponse response = getHttpClient().execute(httpPost);
+		CloseableHttpClient cliente = HttpClients.createDefault();
+		CloseableHttpResponse response = cliente.execute(httpPost);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
 		System.out.println("respuesta -> " + respuesta);
 		T creado = convertResponse(respuesta);
@@ -117,18 +120,12 @@ public abstract class DaoImpl<T extends BaseEntity> implements Dao<T> {
 		String json = gson.toJson(object);
 		System.out.println(json);
 		HttpDelete httpDelete = new HttpDelete(BASE_URL + "/" + object.getId());
-		CloseableHttpResponse response = getHttpClient().execute(httpDelete);
+		CloseableHttpClient cliente = HttpClients.createDefault();
+		CloseableHttpResponse response = cliente.execute(httpDelete);
 		String respuesta = IOUtils.toString(response.getEntity().getContent());
 		object = convertResponse(respuesta);
 		System.out.println("objeto eliminado: " + object);
 
-	}
-
-	private CloseableHttpClient getHttpClient() {
-		if (httpClient == null) {
-			httpClient = HttpClients.createDefault();
-		}
-		return httpClient;
 	}
 
 	public abstract Type getListDataType();

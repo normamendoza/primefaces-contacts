@@ -13,8 +13,9 @@
 <h:body>
  <div class="row" style="margin: 15px;">
    <div class="col-md-4">
-    <h:panelGroup>
+    <h:panelGroup id="formPanelGroup">
         <h3>Contacto</h3>
+        <p:messages id="msgs" />
         <h:form id="contactoForm">
         	<h:panelGroup layout="block" rendered="#{contactsManager.errorMsg != null}">
         	<div class="alert alert-danger alert-dismissable">
@@ -34,32 +35,35 @@
               </div>
               <div class="form-group col-md-6">
                  <label class="field-label">Fecha Creacion</label>	
-             	 <h:inputText value="#{contactsManager.item.fechaStr}" styleClass="form-control" readonly="true"/>
+             	 <p:inputText value="#{contactsManager.item.fechaStr}" styleClass="form-control" readonly="true"/>
               </div>
 			</h:panelGroup>
             <div class="form-group">
                  <label class="field-label">Nombre</label>	
-             	 <h:inputText value="#{contactsManager.item.nombre}" styleClass="form-control"/>
+             	 <p:inputText value="#{contactsManager.item.nombre}" id="nombre" required="true" requiredMessage="Debe ingresar nombre" styleClass="form-control"/>
             </div>
             <div class="form-group">
                  <label class="field-label">Apellido</label>	
-             	 <h:inputText value="#{contactsManager.item.apellido}" styleClass="form-control"/>
+             	 <p:inputText value="#{contactsManager.item.apellido}" id="apellido" required="true" requiredMessage="Debe ingresar apellido" styleClass="form-control"/>
             </div>
             <div class="form-group">
                  <label class="field-label">Alias</label>	
-             	 <h:inputText value="#{contactsManager.item.alias}" styleClass="form-control"/>
+             	 <p:inputText value="#{contactsManager.item.alias}" styleClass="form-control"/>
             </div>
             <div class="form-group">
                  <label class="field-label">Direccion</label>	
-             	 <h:inputText value="#{contactsManager.item.direccion}" styleClass="form-control"/>
+             	 <p:inputText value="#{contactsManager.item.direccion}" styleClass="form-control"/>
             </div>
             <div class="form-group">
-                 <label class="field-label">Email</label>	
-             	 <h:inputText value="#{contactsManager.item.email}" styleClass="form-control"/>
+                 <label class="field-label" for="email">Email</label>	
+             	 <p:inputText value="#{contactsManager.item.email}" id="email" required="true" requiredMessage="Debe ingresar email" styleClass="form-control">
+             	 	<f:validator validatorId="custom.emailValidator" />
+             	 </p:inputText>
             </div>
             <div class="form-group">
                  <label class="field-label">Telefono</label>	
-             	 <h:inputText value="#{contactsManager.item.telefono}" styleClass="form-control"/>
+             	 <p:inputText value="#{contactsManager.item.telefono}" id="telefono" required="true" 
+             	 requiredMessage="Debe ingresar telefono" styleClass="form-control" converterMessage="Debe ingresar un numero valido"/>
             </div>
             <p>
             	<h:commandLink styleClass="btn btn-primary" rendered="#{contactsManager.item.id != null}" action="#{contactsManager.resetAdd}">
@@ -84,7 +88,13 @@
     <h:form>
 			<p:dataTable var="item" lazy="true" value="#{contactsManager.dataTableModel}" paginator="true" rows="10" styleClass="table table-bordered"
                  paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
-                 rowsPerPageTemplate="5,10,15" selectionMode="single" >
+                 rowsPerPageTemplate="5,10,15" widgetVar="contactsTable" >
+            <f:facet name="header">
+            	<p:outputPanel>
+                	<h:outputText value="Buscar:" />
+                	<p:inputText id="globalFilter" onkeyup="PF('contactsTable').filter()" style="width:150px" placeholder="Ingrese texto..."/>
+            	</p:outputPanel>
+        	</f:facet>     
             <p:column><f:facet name="header">ID</f:facet>#{item.id}</p:column>
             <p:column><f:facet name="header">Nombre</f:facet>#{item.nombre}</p:column>
             <p:column><f:facet name="header">Apellido</f:facet>#{item.apellido}</p:column>

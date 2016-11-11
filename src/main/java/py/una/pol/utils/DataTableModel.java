@@ -19,7 +19,9 @@ public abstract class DataTableModel<T extends BaseEntity> extends LazyDataModel
 
 	@Override
 	public List<T> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
-		ListResponse<T> data = getService().getList(first, pageSize, null);
+		String filter = (String) filters.get("globalFilter");
+		System.out.println("Filtrando lista por el valor: " + filter);
+		ListResponse<T> data = getService().getList(first, pageSize, filter);
 		setRowCount(data.getTotal());
 		System.out.println("Registros Encontrados: " + data.getLista().size());
 		return data.getLista();
